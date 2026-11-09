@@ -6,7 +6,7 @@
   --link: #0070f3; --link-soft: #d3e5ff; --bad: #ee0000; --warn: #f5a623; --warn-soft: #ffefcf;
   --on-ink: #ffffff; --ink-hover: #383838;
   --mark-known: #0070f3; --mark-sug: #f5a623; --mark-man: #7928ca;
-  --sans: Geist, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --sans: "Geist Sans", Geist, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --shadow-1: 0 1px 1px rgba(0,0,0,.04);
   --shadow-2: 0 2px 2px rgba(0,0,0,.04), 0 8px 16px -4px rgba(0,0,0,.08);
@@ -94,9 +94,9 @@ button:focus { outline: none; } button:focus-visible, .btn:focus-visible { outli
 .drop .circle { width: 40px; height: 40px; margin: 0 auto 12px; border: 1px solid var(--hairline); border-radius: 50%; background: var(--elevated); display: grid; place-items: center; color: var(--ink); }
 .drop strong { color: var(--ink); font-weight: 500; }
 .meta { font: 400 12px/16px var(--mono); color: var(--mute); margin-top: 12px; word-break: break-all; }
-.viewer { position: relative; display: flex; justify-content: center; align-items: center; background: var(--soft); border: 1px solid var(--hairline); border-radius: 8px; min-height: 260px; overflow: hidden; touch-action: none; }
+.viewer { position: relative; display: flex; justify-content: center; align-items: center; background: var(--soft); border: 1px solid var(--hairline); border-radius: 8px; min-height: 260px; overflow: hidden; }
 .viewer canvas { display: block; max-width: 100%; max-height: 62vh; width: auto; height: auto; }
-.viewer.draw canvas { cursor: crosshair; }
+.viewer.draw canvas { cursor: crosshair; touch-action: none; }
 .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
 .grow { flex: 1; min-width: 0; }
 .hint { color: var(--mute); font-size: 12px; line-height: 16px; }
@@ -128,7 +128,7 @@ input[type=checkbox] { accent-color: var(--ink); width: 16px; height: 16px; marg
 .bar > div { height: 100%; width: 0; background: var(--ink); transition: width .25s; }
 .status { font: 400 12px/16px var(--mono); color: var(--body); margin-top: 8px; min-height: 16px; }
 .err { color: var(--bad); white-space: pre-wrap; }
-.cmp { position: relative; display: inline-block; max-width: 100%; user-select: none; border-radius: 8px; overflow: hidden; border: 1px solid var(--hairline); touch-action: none; cursor: ew-resize; }
+.cmp { position: relative; display: inline-block; max-width: 100%; user-select: none; border-radius: 8px; overflow: hidden; border: 1px solid var(--hairline); touch-action: pan-y; cursor: ew-resize; }
 .cmp canvas { display: block; max-width: 100%; max-height: 66vh; width: auto; height: auto; }
 .cmp .after { position: absolute; inset: 0; }
 .cmp .after canvas { width: 100%; height: 100%; max-height: none; }
@@ -155,4 +155,7 @@ footer p { margin: 0; max-width: 560px; }
   .section-title { font-size: 26px; line-height: 32px; }
   .nav a.link.hide-sm { display: none; }
   .card { padding: 18px; }
+  /* leave room beside tall (9:16) pictures so the page can still be scrolled with a thumb */
+  .viewer canvas { max-height: 52vh; }
+  .cmp canvas { max-height: 58vh; }
 }

@@ -86,30 +86,78 @@ export async function compare(root, srcVideo, outBlob, t) {
   set();
 }
 
-// Save the result: a download on the web; on Android, write to the app cache and open the share sheet
-// (Save to Files / Photos / Drive / YouTube…).
+// Android: write the result into the app cache once (base64 in 3 MB slices keeps memory low) and reuse it
+// for both "Save to gallery" and "Share". Only the latest result is kept in the cache.
+let cached = null;                                 // { blob, name, uri }
+async function toCache(blob, name) {
+  if (cached && cached.blob === blob && cached.name === name) return cached.uri;
+  const { Filesystem, Directory } = await import('@capacitor/filesystem');
+  await Filesystem.rmdir({ path: 'Pixelwash', directory: Directory.Cache, recursive: true }).catch(() => {});
+  const path = 'Pixelwash/' + name;
+  const CH = 3 * 1024 * 1024;
+  for (let off = 0; off < blob.size; off += CH) {
+    const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob.slice(off, off + CH)); });
+    if (off === 0) await Filesystem.writeFile({ path, data: b64, directory: Directory.Cache, recursive: true });
+    else await Filesystem.appendFile({ path, data: b64, directory: Directory.Cache });
+  }
+  const { uri } = await Filesystem.getUri({ path, directory: Directory.Cache });
+  cached = { blob, name, uri };
+  return uri;
+}
+
+// Save the result: a download on the web; on Android, straight into the phone's gallery (Movies/Pixelwash).
+// Returns a short message saying where it went.
 export async function saveBlob(blob, name) {
   if (isNative()) {
-    const { Filesystem, Directory } = await import('@capacitor/filesystem');
-    const { Share } = await import('@capacitor/share');
-    const path = 'Pixelwash/' + name;
-    const CH = 3 * 1024 * 1024;                    // base64 in 3 MB slices keeps memory low
-    for (let off = 0; off < blob.size; off += CH) {
-      const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob.slice(off, off + CH)); });
-      if (off === 0) await Filesystem.writeFile({ path, data: b64, directory: Directory.Cache, recursive: true });
-      else await Filesystem.appendFile({ path, data: b64, directory: Directory.Cache });
-    }
-    const { uri } = await Filesystem.getUri({ path, directory: Directory.Cache });
-    await Share.share({ title: name, files: [uri], dialogTitle: 'Save or share your video' });
-    return;
+    const uri = await toCache(blob, name);
+    const { registerPlugin } = await import('@capacitor/core');
+    const GallerySaver = registerPlugin('GallerySaver');
+    const r = await GallerySaver.saveVideo({ path: decodeURIComponent(new URL(uri).pathname), name, mime: blob.type || 'video/mp4' });
+    return `Saved to your gallery, in ${r.folder || 'Movies/Pixelwash'}.`;
   }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  return 'Downloaded ' + name + '.';
+}
+
+// Android only: hand the result to another app (YouTube, Drive, WhatsApp…).
+export async function shareBlob(blob, name) {
+  const uri = await toCache(blob, name);
+  const { Share } = await import('@capacitor/share');
+  await Share.share({ title: name, files: [uri], dialogTitle: 'Share your video' });
+}
+
+// Wires the Save / Share buttons of a result card. getFile() → { blob, name } or null.
+// Returns reset(), to call when a new result replaces the old one.
+export function saveButtons(card, getFile) {
+  const save = $('#save', card), share = $('#share', card), msg = $('#saved', card);
+  const label = isNative() ? 'Save to gallery' : 'Save video';
+  save.textContent = label;
+  share.classList.toggle('hidden', !isNative());
+  const busy = (on, text) => { save.disabled = share.disabled = on; if (text != null) save.textContent = text; };
+  let savedBlob = null;                            // on Android, one gallery copy per result (no "name (1).mp4" duplicates)
+  save.onclick = async () => {
+    const f = getFile(); if (!f || save.disabled) return;
+    if (isNative() && f.blob === savedBlob) return;
+    busy(true, 'Saving…'); msg.textContent = '';
+    try { msg.textContent = await saveBlob(f.blob, f.name); savedBlob = f.blob; busy(false, isNative() ? 'Saved ✓' : label); }
+    catch (e) { busy(false, label); msg.innerHTML = `<span class="err">${esc(e.message || e)}</span>`; }
+  };
+  share.onclick = async () => {
+    const f = getFile(); if (!f) return;
+    busy(true); msg.textContent = '';
+    try { await shareBlob(f.blob, f.name); }
+    catch (e) { if (!/cancel/i.test(e.message || '')) msg.innerHTML = `<span class="err">${esc(e.message || e)}</span>`; }
+    busy(false);
+  };
+  return () => { savedBlob = null; busy(false, label); msg.textContent = ''; };
 }
 
 export function outName(info, tag, ext) {
-  const stem = info.name.replace(/\.[^.]+$/, '');
+  let stem = info.name.replace(/\.[^.]+$/, '');
+  // Android's photo picker hands files over as bare numbers (1000236696.mp4): use a readable name instead
+  if (/^\d+$/.test(stem)) { const d = new Date(), p = n => String(n).padStart(2, '0'); stem = `Pixelwash_${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`; }
   return `${stem}_${tag}.${ext}`;
 }
 

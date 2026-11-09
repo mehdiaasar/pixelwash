@@ -27,7 +27,7 @@ Both tools keep the source frame rate, copy the audio untouched, and encode H.26
 | Image processing | WebGL2 shaders (Lanczos, CAS, unblend, pull-push inpaint, blend) |
 | Watermark fitting | plain JavaScript on sampled frames |
 | AI | ONNX Runtime Web + a Real-ESRGAN model converted from the official ncnn release (`tools/convert_realesrgan.py`, checked against the native binary: 48 dB PSNR) |
-| Android | Capacitor 8: the same web app inside the APK, processing on the phone |
+| Android | Capacitor 8: the same web app inside the APK, processing on the phone; results save straight to the gallery (Movies/Pixelwash) through a small native MediaStore plugin, with a separate Share button |
 
 Needs a browser with WebCodecs and WebGL2: recent Chrome, Edge or Opera on desktop or Android, and the Android app (Android 10+ with an up-to-date System WebView). Safari and Firefox support varies.
 
@@ -45,6 +45,8 @@ npm run build && npx cap sync android
 cd android && ./gradlew assembleDebug     # app/build/outputs/apk/debug/
 ```
 Release signing reads `android/keystore.properties` (not committed) or the `PW_KEYSTORE*` environment variables. GitHub Actions deploys the website on every push to `main`. The Android workflow is manual and needs the signing secrets listed at the top of `.github/workflows/android.yml`; releases so far were signed locally.
+
+Tested on a Samsung Galaxy S25 Ultra (Android 17, WebView 156): H.264 and HEVC input, both tools, 4K output, AI blend (about 2 s per frame at 540×960).
 
 ## Responsible use
 Only remove watermarks from videos you own or have the rights to. Some platforms add visible marks to label AI-generated or edited content and may require that label to stay when you publish; Pixelwash does not ship templates for any company's marks.

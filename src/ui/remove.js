@@ -1,5 +1,5 @@
 // Remove tool: find or draw watermark boxes, measure each mark, re-encode with it removed.
-import { $, h, esc, dropzone, metaLine, progress, show, compare, saveBlob, outName, keepAwake, unsupportedNote } from './common.js';
+import { $, h, esc, dropzone, metaLine, progress, show, compare, saveButtons, outName, keepAwake, unsupportedNote } from './common.js';
 import { frameAt, convert } from '../lib/video.js';
 import { suggest, fitMark, inpaintAll } from '../lib/fit.js';
 import { makeRemover } from '../lib/process.js';
@@ -29,8 +29,9 @@ export function renderRemove(root) {
         <div class="center" id="cmp"></div>
         <div class="row"><span class="hint">Compare at</span><input id="ct" type="range" min="0" max="1" step="0.01" value="0.5" class="grow"><span id="ctl" class="hint"></span></div>
         <div id="report" class="meta"></div>
-        <div class="result-actions"><button class="primary" id="save">Save video</button>
+        <div class="result-actions"><button class="primary" id="save">Save video</button><button id="share" class="hidden">Share…</button>
           <input id="markName" type="text" placeholder="Name this mark to reuse it (optional)" style="flex:1;min-width:180px"><button id="remember">Remember mark</button></div>
+        <div id="saved" class="hint" style="margin-top:8px" aria-live="polite"></div>
       </div>
     </div>
     <aside class="stack">
@@ -149,7 +150,7 @@ export function renderRemove(root) {
         process: s => { const img = s.toCanvasImageSource(); return rm.frame(img); },
         onProgress: p => prog.set(p, 'removing + encoding'),
       });
-      result = { ...out, fits };
+      result = { ...out, fits, name: outName(v.info, 'clean', out.ext) }; resetSave();
       prog.done(`done · ${(out.blob.size / 1e6).toFixed(1)} MB`);
       $('#resultCard').classList.remove('hidden');
       $('#report').innerHTML = fits.map((f, i) => `mark ${i + 1}: ${f.mode === 'unblend' ? `semi-transparent, recovered (leftover ${f.after} levels, was ${f.before})` : f.mode === 'inpaint' ? 'solid, filled from surroundings' : 'nothing measurable in this box'}`).join('<br>')
@@ -164,7 +165,7 @@ export function renderRemove(root) {
 
   async function showCompare() { const t = +$('#ct').value; $('#ctl').textContent = t.toFixed(1) + ' s'; await compare($('#cmp'), v, result.blob, t); }
   let ct; $('#ct').oninput = () => { clearTimeout(ct); ct = setTimeout(showCompare, 150); };
-  $('#save').onclick = () => result && saveBlob(result.blob, outName(v.info, 'clean', result.ext)).catch(e => prog.error(e));
+  const resetSave = saveButtons($('#resultCard'), () => result && { blob: result.blob, name: result.name });
   $('#remember').onclick = () => {
     const name = $('#markName').value.trim() || 'mark ' + (savedMarks().length + 1);
     const marks = savedMarks();

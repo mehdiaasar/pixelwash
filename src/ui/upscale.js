@@ -1,5 +1,5 @@
 // Upscale tool: classical Lanczos + CAS, or AI blend (Real-ESRGAN mixed with classical), all on-device.
-import { $, dropzone, metaLine, progress, compare, saveBlob, outName, keepAwake, unsupportedNote, fmtTime } from './common.js';
+import { $, dropzone, metaLine, progress, compare, saveButtons, outName, isNative, keepAwake, unsupportedNote, fmtTime } from './common.js';
 import { frameAt, convert } from '../lib/video.js';
 import { PRESETS, targetSize, makeUpscaler, aiWorkSize } from '../lib/process.js';
 import { AIUpscaler } from '../lib/ai.js';
@@ -24,7 +24,8 @@ export function renderUpscale(root) {
         <div class="center" id="cmp"></div>
         <div class="row"><span class="hint">Compare at</span><input id="ct" type="range" min="0" max="1" step="0.01" value="0.5" class="grow"><span id="ctl" class="hint"></span></div>
         <div id="report" class="meta"></div>
-        <div class="result-actions"><button class="primary" id="save">Save video</button></div>
+        <div class="result-actions"><button class="primary" id="save">Save video</button><button id="share" class="hidden">Share…</button></div>
+        <div id="saved" class="hint" style="margin-top:8px" aria-live="polite"></div>
       </div>
     </div>
     <aside class="stack">
@@ -39,7 +40,7 @@ export function renderUpscale(root) {
         </div>
         <div id="aiOpts" class="hidden">
           <label class="f">AI share <b id="bv">50%</b><input id="blend" type="range" min="0.2" max="0.8" step="0.05" value="0.5"></label>
-          <div class="note">Real-ESRGAN (anime-video model) runs on your GPU, mixed with the classical result so 3D characters keep their shading. It's slow: seconds per frame on a laptop, longer on phones. Try "Preview this frame" first. The first run downloads the AI runtime (~30 MB) once.</div>
+          <div class="note">Real-ESRGAN (anime-video model) runs on your GPU, mixed with the classical result so 3D characters keep their shading. It's slow: seconds per frame on a laptop, longer on phones. Try "Preview this frame" first.${isNative() ? '' : ' The first run downloads the AI runtime (~30 MB) once.'}</div>
         </div>
         <button class="primary block" id="go" style="margin-top:16px" disabled>Upscale video</button>
         <div class="bar"><div></div></div><div class="status"></div>
@@ -95,10 +96,12 @@ export function renderUpscale(root) {
     if (!ai) ai = await AIUpscaler.create(s => prog.start(s));
     return ai;
   }
+  // settings are read once, when a run starts, so moving a slider mid-run can't change what's reported
   function makeProc(s) {
-    return makeUpscaler(v.info.width, v.info.height, s[0], s[1], method === 'ai'
+    const opts = method === 'ai'
       ? { ai, blend: +$('#blend').value }
-      : { sharpen: +$('#sharpen').value, denoise: +$('#denoise').value });
+      : { sharpen: +$('#sharpen').value, denoise: +$('#denoise').value };
+    return Object.assign(makeUpscaler(v.info.width, v.info.height, s[0], s[1], opts), { opts });
   }
 
   $('#test').onclick = async () => {
@@ -131,12 +134,12 @@ export function renderUpscale(root) {
         process: async smp => up.frame(smp.toCanvasImageSource()),
         onProgress: p => prog.set(p, label),
       });
-      result = out;
+      result = { ...out, name: outName(v.info, method === 'ai' ? 'upscaled_ai' : 'upscaled', out.ext) }; resetSave();
       prog.done(`done · ${(out.blob.size / 1e6).toFixed(1)} MB`);
       $('#resultCard').classList.remove('hidden');
       const m = method === 'ai'
-        ? `AI blend: Real-ESRGAN ×4 (${ai.backend}) at ${up.aiWork.join('×')}, ${Math.round(+$('#blend').value * 100)}% mixed with classical (smoothing + Lanczos + CAS 0.6)`
-        : `classical: Lanczos${+$('#sharpen').value > 0 ? ' + CAS ' + $('#sharpen').value : ''}${+$('#denoise').value > 0 ? ' + denoise ' + $('#denoise').value : ''}`;
+        ? `AI blend: Real-ESRGAN ×4 (${ai.backend}) at ${up.aiWork.join('×')}, ${Math.round(up.opts.blend * 100)}% mixed with classical (smoothing + Lanczos + CAS 0.6)`
+        : `classical: Lanczos${up.opts.sharpen > 0 ? ' + CAS ' + up.opts.sharpen : ''}${up.opts.denoise > 0 ? ' + denoise ' + up.opts.denoise : ''}`;
       $('#report').innerHTML = `${s[0]}×${s[1]} · ${out.codec.toUpperCase()} · ${(out.bitrate / 1e6).toFixed(1)} Mbps · ${m}${up.layout.contain ? ' · fitted inside with a blurred fill' : ''}`;
       $('#ct').max = Math.max(0, v.info.duration - 0.05); $('#ct').value = +$('#t').value;
       await showCompare();
@@ -147,5 +150,5 @@ export function renderUpscale(root) {
   };
   async function showCompare() { const t = +$('#ct').value; $('#ctl').textContent = t.toFixed(1) + ' s'; await compare($('#cmp'), v, result.blob, t); }
   let ct; $('#ct').oninput = () => { clearTimeout(ct); ct = setTimeout(showCompare, 150); };
-  $('#save').onclick = () => result && saveBlob(result.blob, outName(v.info, method === 'ai' ? 'upscaled_ai' : 'upscaled', result.ext)).catch(e => prog.error(e));
+  const resetSave = saveButtons($('#resultCard'), () => result && { blob: result.blob, name: result.name });
 }
