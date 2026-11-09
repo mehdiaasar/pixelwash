@@ -32,8 +32,9 @@ MIT License. Copyright (c) Microsoft Corporation. https://github.com/microsoft/o
 ## Capacitor (Android app shell)
 MIT License. Copyright (c) Ionic Team. https://github.com/ionic-team/capacitor
 
-## Geist and Geist Mono fonts (loaded from Google Fonts on the website)
-SIL Open Font License 1.1. Copyright (c) Vercel.
+## Geist and Geist Mono fonts (bundled, via @fontsource/geist-sans and @fontsource/geist-mono)
+SIL Open Font License 1.1. Copyright (c) 2023 Vercel, in collaboration with basement.studio. https://github.com/vercel/geist-font
+The font files ship unmodified inside the website and the app; the full licence is in `node_modules/@fontsource/geist-sans/LICENSE`.
 
 ## Design reference
 `DESIGN.md` comes from the getdesign.md "vercel" template (VoltAgent/awesome-design-md) and is used as a style guide only.

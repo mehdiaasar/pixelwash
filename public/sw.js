@@ -1,5 +1,5 @@
 // Offline cache for the Pixelwash website: network first for pages, cache first for hashed assets/models.
-const CACHE = 'pixelwash-v1';
+const CACHE = 'pixelwash-v2';
 self.addEventListener('install', e => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {

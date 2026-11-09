@@ -1,3 +1,9 @@
+// Geist ships inside the app/site (OFL-1.1): no font requests to Google, and the design holds offline
+import '@fontsource/geist-sans/400.css';
+import '@fontsource/geist-sans/500.css';
+import '@fontsource/geist-sans/600.css';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
 import './style.css';
 import { renderHome, REPO } from './ui/home.js';
 import { renderRemove } from './ui/remove.js';
