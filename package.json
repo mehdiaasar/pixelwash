@@ -1,0 +1,25 @@
+{
+  "name": "pixelwash",
+  "version": "1.0.0",
+  "description": "Remove watermarks and upscale videos, privately, right in your browser or on your Android phone.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/share": "8.0.3",
+    "mediabunny": "1.62.1",
+    "onnxruntime-web": "1.30.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3",
+    "vite": "6.3.5"
+  },
+  "type": "module",
+  "private": true
+}

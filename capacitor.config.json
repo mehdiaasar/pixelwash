@@ -1,0 +1,7 @@
+{
+  "appId": "io.github.mehdiaasar.pixelwash",
+  "appName": "Pixelwash",
+  "webDir": "dist",
+  "android": { "allowMixedContent": false, "webContentsDebuggingEnabled": false },
+  "server": { "androidScheme": "https" }
+}
