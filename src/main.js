@@ -26,7 +26,7 @@ document.body.innerHTML = `
 <main id="view"></main>
 <footer><div class="wrap">
   <p>Pixelwash is free and open source (MIT). Videos are processed on your device and never uploaded. Only remove watermarks from videos you own or have the rights to.</p>
-  <p class="hint">Built with <a href="https://mediabunny.dev" target="_blank" rel="noopener">Mediabunny</a> (MPL-2.0), <a href="https://github.com/xinntao/Real-ESRGAN" target="_blank" rel="noopener">Real-ESRGAN</a> (BSD-3) and <a href="https://onnxruntime.ai" target="_blank" rel="noopener">ONNX Runtime</a> (MIT). <a href="${REPO}" target="_blank" rel="noopener">Source</a></p>
+  <p class="hint">Built with <a href="https://mediabunny.dev" target="_blank" rel="noopener">Mediabunny</a> (MPL-2.0), <a href="https://github.com/xinntao/Real-ESRGAN" target="_blank" rel="noopener">Real-ESRGAN</a> (BSD-3) and <a href="https://onnxruntime.ai" target="_blank" rel="noopener">ONNX Runtime</a> (MIT). <a href="${REPO}" target="_blank" rel="noopener">Source</a> · <a href="privacy.html">Privacy</a></p>
 </div></footer>`;
 
 // theme: follow the system, remember a manual choice

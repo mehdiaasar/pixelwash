@@ -93,7 +93,10 @@ export function renderUpscale(root) {
   let tt; $('#t').oninput = () => { $('#tl').textContent = (+$('#t').value).toFixed(1) + ' s'; clearTimeout(tt); tt = setTimeout(loadFrame, 120); };
 
   async function getAI() {
-    if (!ai) ai = await AIUpscaler.create(s => prog.start(s));
+    if (!ai) {
+      ai = await AIUpscaler.create(s => prog.start(s));
+      prog.start('AI model ready (' + ai.backend + ')');   // replace the "loading AI model…" line once it has loaded
+    }
     return ai;
   }
   // settings are read once, when a run starts, so moving a slider mid-run can't change what's reported

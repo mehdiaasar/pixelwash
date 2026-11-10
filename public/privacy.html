@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy · Pixelwash</title>
+<meta name="description" content="Pixelwash processes your videos on your own device. It collects no personal data.">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<style>
+  :root { --ink: #171717; --body: #4d4d4d; --mute: #8f8f8f; --hairline: #ebebeb; --canvas: #fafafa; --link: #0068d6; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #ededed; --body: #a1a1a1; --mute: #8f8f8f; --hairline: #2e2e2e; --canvas: #0a0a0a; --link: #52a8ff; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--body); font: 400 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 16px 72px; }
+  h1 { color: var(--ink); font-size: 34px; line-height: 1.15; letter-spacing: -1px; margin: 0 0 8px; font-weight: 600; }
+  h2 { color: var(--ink); font-size: 20px; letter-spacing: -0.4px; margin: 36px 0 8px; font-weight: 600; }
+  p, li { margin: 0 0 12px; }
+  ul { padding-left: 20px; }
+  a { color: var(--link); }
+  .meta { color: var(--mute); font-size: 14px; margin-bottom: 32px; }
+  .back { display: inline-block; margin-bottom: 32px; font-size: 14px; text-decoration: none; }
+  strong { color: var(--ink); font-weight: 600; }
+  hr { border: 0; border-top: 1px solid var(--hairline); margin: 40px 0 16px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">← Pixelwash</a>
+  <h1>Privacy policy</h1>
+  <p class="meta">Applies to the Pixelwash website and the Pixelwash Android app · Effective 9 November 2026</p>
+
+  <p><strong>Short version: Pixelwash does not collect, store or share any personal data.</strong> Your videos are processed on your own device and are never uploaded.</p>
+
+  <h2>Who we are</h2>
+  <p>Pixelwash is a free, open-source watermark remover and video upscaler made by Aasar Mehdi (GitHub: <a href="https://github.com/mehdiaasar">mehdiaasar</a>). The full source code is public at <a href="https://github.com/mehdiaasar/pixelwash">github.com/mehdiaasar/pixelwash</a>, so you can check everything described here.</p>
+
+  <h2>Your videos</h2>
+  <p>When you open a video, Pixelwash reads it, processes it and writes the result entirely on your device, using your browser's or phone's own video decoder, encoder and graphics processor. The AI upscaling model runs on your device too and ships with the app. No video, frame, thumbnail or file name is ever sent to us or to anyone else.</p>
+
+  <h2>What we collect</h2>
+  <p>Nothing. Pixelwash has no accounts, no sign-in, no analytics, no advertising, no tracking and no cookies. It sends no data to any server run by us or by a third party.</p>
+
+  <h2>What stays on your device</h2>
+  <ul>
+    <li><strong>Saved marks:</strong> if you choose "Remember mark", its position and size are kept in your browser's or app's local storage so it can be found again. You can delete them in the app at any time.</li>
+    <li><strong>Theme choice</strong> (light or dark), kept in local storage.</li>
+    <li><strong>Your results:</strong> on Android, a finished video is kept in the app's private cache until you process the next one, and copied to your gallery (Movies/Pixelwash) only when you tap "Save to gallery". On the website it is downloaded only when you tap "Save video".</li>
+  </ul>
+  <p>Uninstalling the app or clearing the site's data removes everything Pixelwash stored.</p>
+
+  <h2>Sharing</h2>
+  <p>On Android, the "Share" button hands your video to another app you pick (for example YouTube or Drive). What that app does with it is covered by that app's own privacy policy. Pixelwash never shares anything on its own.</p>
+
+  <h2>Android permissions</h2>
+  <p>The app declares the standard Internet permission that its app framework (Capacitor) includes. Pixelwash does not use it to send your data anywhere; links such as "Source" open in your browser. Saving to your gallery uses Android's media store and needs no storage permission. The photo picker gives the app access only to the video you choose.</p>
+
+  <h2>Website hosting</h2>
+  <p>The website is hosted on GitHub Pages. Like any web host, GitHub may process technical information such as your IP address to deliver and secure the site, as described in the <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub Privacy Statement</a>. Pixelwash itself receives none of it.</p>
+
+  <h2>Children</h2>
+  <p>Pixelwash is a general-purpose video tool and is not directed at children under 13. It collects no data from anyone, including children.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the new version will be posted on this page with a new effective date. Every past version is kept in the project's public history on GitHub.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about privacy? Open an issue at <a href="https://github.com/mehdiaasar/pixelwash/issues">github.com/mehdiaasar/pixelwash/issues</a>.</p>
+
+  <hr>
+  <p class="meta">Pixelwash is free and open source (MIT).</p>
+</main>
+</body>
+</html>

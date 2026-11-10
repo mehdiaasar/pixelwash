@@ -44,6 +44,8 @@ Android (needs JDK 21 and the Android SDK):
 npm run build && npx cap sync android
 cd android && ./gradlew assembleDebug     # app/build/outputs/apk/debug/
 ```
+Icons, launcher and splash images and the Play feature graphic are generated from one SVG design by `python3 tools/make_icons.py`. The Google Play listing text, form answers and graphics are in [`store/play/`](store/play/LISTING.md); the privacy policy is [`public/privacy.html`](https://mehdiaasar.github.io/pixelwash/privacy.html).
+
 Release signing reads `android/keystore.properties` (not committed) or the `PW_KEYSTORE*` environment variables. GitHub Actions deploys the website on every push to `main`. The Android workflow is manual and needs the signing secrets listed at the top of `.github/workflows/android.yml`; releases so far were signed locally.
 
 Tested on a Samsung Galaxy S25 Ultra (Android 17, WebView 156): H.264 and HEVC input, both tools, 4K output, AI blend (about 2 s per frame at 540×960).

@@ -91,9 +91,13 @@ export function renderRemove(root) {
       const name = b.type === 'saved' ? 'Saved: ' + esc(b.name) : b.type === 'sug' ? 'Suggestion' : 'Your box';
       const li = h(`<li><input type="checkbox" ${b.on ? 'checked' : ''} aria-label="use this box"><i class="dot" style="background:${COL[b.type]}"></i>
         <span class="grow">${name}<small>${b.box.join(', ')}${b.conf != null ? ' · ' + Math.round(b.conf * 100) + '% sure' : ''}</small></span>
-        <button class="x" aria-label="remove box">✕</button></li>`);
+        <button class="x" aria-label="${b.type === 'saved' ? 'forget this saved mark' : 'remove box'}" title="${b.type === 'saved' ? 'Forget this saved mark' : 'Remove'}">✕</button></li>`);
       $('input', li).onchange = e => { b.on = e.target.checked; draw(); };
-      $('.x', li).onclick = () => { boxes.splice(i, 1); renderList(); draw(); };
+      $('.x', li).onclick = () => {
+        // a saved mark is forgotten for good (removed from local storage), not just hidden for this video
+        if (b.type === 'saved') storeMarks(savedMarks().filter(m => !(m.name === b.name && m.w === v.info.width && m.h === v.info.height && String(m.box) === String(b.box))));
+        boxes.splice(i, 1); renderList(); draw();
+      };
       ul.appendChild(li);
     });
   }
